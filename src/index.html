@@ -13,10 +13,13 @@
   <p><i>Downloads any video from YouTube to an mp3 file. Some videos may not work due to region or other content restrictions. The file name is optional and will default to the title of the downloaded video.</i></p>
 </div>
 <br>
-<div class="downloader">
-  <input id="url-box" type="text" placeholder="URL">
-  <input id="name-box" type="text" placeholder="File name (Optional)">
-  <button type="button" id="download-btn">DOWNLOAD</button>
+<div class="input-field">
+  <input type="text" name="url" id="url" placeholder="YouTube URL or video ID">
+  <label for="url">URL</label>
+</div>
+<div class="input-field">
+  <input type="text" name="file-name" id="file-name" placeholder="File name">
+  <label for="file-name">File name</label>
 </div>
 <div class="messages">
   <p id="status" style="font-style: italic;"></p>
