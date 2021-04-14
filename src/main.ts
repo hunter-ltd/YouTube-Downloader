@@ -1,4 +1,4 @@
-import {app, BrowserWindow} from 'electron';
+import {app, BrowserWindow, Menu, shell} from 'electron';
 import * as path from "path";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -17,6 +17,65 @@ const createWindow = () => {
 
     }
   });
+
+  const menu = Menu.buildFromTemplate([
+    {
+      label: 'File',
+      submenu: [
+        {
+          label: 'GitHub Page',
+          click() {
+            shell.openExternal('https://github.com/hunter-ltd/StreamerTools')
+          }
+        },
+        { label: "About YTDL GUI", role: "about" },
+        { type: "separator" },
+        {
+          label: 'Save folder',
+          click() {
+            var settingsWindow = new BrowserWindow({
+              width: 500,
+              height: 450,
+              frame: true,
+              webPreferences: {
+                nodeIntegration: true,
+                enableRemoteModule: true,
+              }
+            });
+            // settingsWindow.openDevTools();
+            settingsWindow.on('close', () => {
+              settingsWindow = null;
+            });
+            settingsWindow.loadURL(path.join("file://", __dirname, 'settings.html'));
+            settingsWindow.show()
+          }
+        },
+        {type: 'separator'},
+        {
+          label: 'Quit',
+          accelerator: "CmdOrCtrl+Q",
+          click() {
+            app.quit();
+          }
+        },
+      ]
+    },
+    {
+      label: 'Edit',
+      submenu: [
+        { label: "Undo", accelerator: "CmdOrCtrl+Z", role: "undo" },
+        { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", role: "redo" },
+        { type: "separator" },
+        { label: "Cut", accelerator: "CmdOrCtrl+X", role: "cut" },
+        { label: "Copy", accelerator: "CmdOrCtrl+C", role: "copy" },
+        { label: "Paste", accelerator: "CmdOrCtrl+V", role: "paste" },
+        { label: "Select All", accelerator: "CmdOrCtrl+A", role: "selectAll" }
+      ]
+    }
+  ]);
+
+  Menu.setApplicationMenu(menu);
+
 
   // and load the index.html of the app.
   mainWindow.loadFile(path.join(__dirname, 'index.html'));
