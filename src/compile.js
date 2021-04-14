@@ -8,6 +8,9 @@ const compile = () => {
         case "Windows_NT":
             command += "robocopy src build *.html *.css";
             break;
+        case "Darwin":
+            command += "cp src/*.html src/*.css build/";
+            break;
         default:
             throw new Error("Unsupported OS: " + os.type());
     }
