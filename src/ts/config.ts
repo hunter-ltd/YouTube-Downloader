@@ -35,6 +35,7 @@ class UserConfig {
             let data: Object = {
                 savePath: this.path
             }
+            fs.writeFileSync(this.path, JSON.stringify(data)); // creates and writes to the settings file
             return data
         }
     }
