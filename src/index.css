@@ -38,7 +38,7 @@ label, input {
 input {
   font-size: 1.5em;
   border: 0;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid var(--secondary-text-color);
   background: none;
   color: var(--primary-text-color);
   font-family: inherit;
@@ -50,7 +50,7 @@ input {
 
 input:focus {
   outline: 0;
-  border-bottom: 1px solid var(--primary-text-color);
+  border-bottom: 1px solid var(--glow-color);
 }
 
 label {
@@ -97,4 +97,24 @@ input:focus + label {
 
 input:not(:placeholder-shown) + label {
   color: var(--secondary-text-color);
+}
+
+.button-wrapper button {
+  text-transform: uppercase;
+  border: none;
+  outline: none;
+  transition: all ease-in-out 0.2s;
+  background: var(--second-bg-color);
+  color: var(--secondary-text-color);
+  font-size: 1.2em;
+  padding: 0.4em;
+  border-radius: 6px;
+  font-weight: bold;
+  margin-top: 0.8em;
+}
+
+.button-wrapper button:hover {
+  background: var(--glow-color);
+  color: var(--primary-text-color);
+  cursor: pointer;
 }

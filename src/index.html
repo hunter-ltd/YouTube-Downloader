@@ -10,7 +10,7 @@
 <body>
 <div class="header">
   <h1>YouTube MP3 Downloader</h1>
-  <p><i>Downloads any video from YouTube to an mp3 file. Some videos may not work due to region or other content restrictions. The file name is optional and will default to the title of the downloaded video.</i></p>
+  <p><i>Note: Some videos may not work due to region or other content restrictions</i></p>
 </div>
 <br>
 <div class="input-field">
@@ -18,8 +18,11 @@
   <label for="url">URL</label>
 </div>
 <div class="input-field">
-  <input type="text" name="file-name" id="file-name" placeholder="File name">
+  <input type="text" name="file-name" id="file-name" placeholder="File name (optional)">
   <label for="file-name">File name</label>
+</div>
+<div class="button-wrapper">
+  <button type="button" id="download-btn" name="download-btn">Download</button>
 </div>
 <div class="messages">
   <p id="status" style="font-style: italic;"></p>
