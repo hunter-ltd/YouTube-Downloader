@@ -62,7 +62,7 @@ label {
 */
 input:placeholder-shown + label {
   cursor: text;
-  max-width: 66.66%; /* Prevents wrapping and ensurse correct scaling */
+  max-width: 66.66%; /* Prevents wrapping and ensures correct scaling */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -107,7 +107,7 @@ input:not(:placeholder-shown) + label {
   background: var(--second-bg-color);
   color: var(--secondary-text-color);
   font-size: 1.2em;
-  padding: 0.4em;
+  padding: 0.6em;
   border-radius: 6px;
   font-weight: bold;
   margin-top: 0.8em;
