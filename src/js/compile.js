@@ -20,11 +20,9 @@ const compile = async () => {
     for await (const file of getAllFiles(resolve(process.cwd(), "src"))) {
         let parent = dirname(file);
         if (!(parent.endsWith("ts") || parent.endsWith("js"))) {
-            mkdir(resolve(process.cwd(), "build", basename(parent)), { recursive: true }).then(() => {
-                copyFile(file, resolve(process.cwd(), "build", basename(parent), basename(file))).catch(err => {
-                    return new Promise((resolve1, reject) => reject(err));
-                });
-            }).catch(() => {
+            mkdir(resolve(process.cwd(), "build", basename(parent)), { recursive: true }).finally(() => {
+                // I want the files copied regardless of if the directory exists or not. If there is a more severe
+                // error that rejects the copying, then that will reject this function with the same error
                 copyFile(file, resolve(process.cwd(), "build", basename(parent), basename(file))).catch(err => {
                     return new Promise((resolve1, reject) => reject(err));
                 });
