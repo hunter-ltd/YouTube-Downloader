@@ -16,8 +16,8 @@ export class YouTubeVideo {
                 output = ffmpeg(stream).save(path);
             [stream, output].forEach(item => item.on('error', err => reject(err)));
             output.on('start', () => {
-                // set start status
-            }).on('end', () => resolve(path)); // resolve with a custom audio file class later on
+                // TODO: set start status
+            }).on('end', () => resolve(path)); // TODO: resolve with a custom audio file class later on
         });
     }
 }
