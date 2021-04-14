@@ -1,4 +1,3 @@
-const os = require('os');
 const { readdir, mkdir, copyFile } = require('fs').promises;
 const { resolve, dirname, basename } = require('path');
 const { exec } = require('child_process');
@@ -21,17 +20,18 @@ const compile = async () => {
     for await (const file of getAllFiles(resolve(process.cwd(), "src"))) {
         let parent = dirname(file);
         if (!(parent.endsWith("ts") || parent.endsWith("js"))) {
-            mkdir(resolve(process.cwd(), "build", basename(parent))).then(() => {
+            mkdir(resolve(process.cwd(), "build", basename(parent)), { recursive: true }).then(() => {
                 copyFile(file, resolve(process.cwd(), "build", basename(parent), basename(file))).catch(err => {
-                    console.error(err);
+                    return new Promise((resolve1, reject) => reject(err));
                 });
             }).catch(() => {
                 copyFile(file, resolve(process.cwd(), "build", basename(parent), basename(file))).catch(err => {
-                    console.error(err);
+                    return new Promise((resolve1, reject) => reject(err));
                 });
             });
         }
     }
+    return new Promise(resolve => resolve());
 }
 
-compile();
+compile().then(() => console.log('Electron TypeScript successfully compiled')).catch(err => console.error(err));
