@@ -41,10 +41,4 @@ class UserConfig {
     }
 }
 
-document.getElementById("download-btn").addEventListener('click', event => {
-    UserConfig.makeNewConfig().then(config => {
-        console.log(config.path);
-    });
-})
-
 module.exports = UserConfig.makeNewConfig;
