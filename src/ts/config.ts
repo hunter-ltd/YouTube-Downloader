@@ -9,20 +9,6 @@ class UserConfig {
         return this._path;
     }
 
-    /**
-     * Factory function that asynchronously creates a new config object
-     * @returns {Promise<UserConfig>} A promise resolving with the UserConfig object and rejecting with an error
-     */
-    public static makeNewConfig: () => Promise<UserConfig> = async () => {
-        return await new Promise<UserConfig>((resolve, reject) => {
-            ipcRenderer.invoke("configGetApp").then(value => {
-                resolve(new UserConfig(path.resolve(value, "userSettings.json")));
-            }).catch(err => {
-                reject(err);
-            });
-        });
-    }
-
     constructor(path: string) {
         this._path = path;
         this._data = this.parseDataFile();
@@ -41,4 +27,18 @@ class UserConfig {
     }
 }
 
-module.exports = UserConfig.makeNewConfig;
+/**
+ * Factory function that asynchronously creates a new config object
+ * @returns {Promise<UserConfig>} A promise resolving with the UserConfig object and rejecting with an error
+ */
+export const makeNewConfig: () => Promise<UserConfig> = async () => {
+    return await new Promise<UserConfig>((resolve, reject) => {
+        ipcRenderer.invoke("configGetApp").then(value => {
+            resolve(new UserConfig(path.resolve(value, "userSettings.json")));
+        }).catch(err => {
+            reject(err);
+        });
+    });
+}
+
+module.exports = makeNewConfig;
