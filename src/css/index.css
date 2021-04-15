@@ -99,6 +99,10 @@ input:not(:placeholder-shown) + label {
   color: var(--secondary-text-color);
 }
 
+input:not(:placeholder-shown) + label:hover {
+  color: var(--primary-text-color);
+}
+
 .button-wrapper button {
   text-transform: uppercase;
   border: none;
@@ -110,7 +114,7 @@ input:not(:placeholder-shown) + label {
   padding: 0.6em;
   border-radius: 6px;
   font-weight: bold;
-  margin-top: 0.8em;
+  margin: 0.8em;
 }
 
 .button-wrapper button:hover {
