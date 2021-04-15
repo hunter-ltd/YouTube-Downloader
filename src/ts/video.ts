@@ -10,6 +10,10 @@ export class YouTubeVideo {
         this._url = url;
     }
 
+    /**
+     * Downloads and saves the video from YouTube
+     * @param path Where to save the video
+     */
     public save = async (path: string) => {
         return new Promise(async (resolve, reject) => {
             let stream = ytdl(this._url, {filter: "audioonly"}),
