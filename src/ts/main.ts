@@ -1,4 +1,4 @@
-import {app, BrowserWindow, Menu, shell, ipcMain} from 'electron';
+import {app, BrowserWindow, Menu, shell, ipcMain, dialog} from 'electron';
 import * as path from "path";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -38,14 +38,14 @@ const createWindow = () => {
               frame: true,
               webPreferences: {
                 nodeIntegration: true,
-                enableRemoteModule: true,
+                contextIsolation: false
               }
             });
-            // settingsWindow.openDevTools();
+            settingsWindow.webContents.openDevTools();
             settingsWindow.on('close', () => {
               settingsWindow = null;
             });
-            settingsWindow.loadURL(path.join("file://", __dirname, 'settings.html'));
+            settingsWindow.loadURL(path.join("file://", __dirname, 'html', 'settings.html'));
             settingsWindow.show()
           }
         },
@@ -107,6 +107,5 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
-ipcMain.handle("configGetApp", async event => {
-  return app.getPath('userData');
-});
+ipcMain.handle("getPath", async (ev, args) => app.getPath(args));
+ipcMain.handle("showOpenDialog", async () => dialog.showOpenDialog({properties: ['openDirectory']}));
