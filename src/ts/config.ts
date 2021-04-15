@@ -2,7 +2,7 @@ import * as path from "path";
 import * as fs from "fs";
 import {ipcRenderer} from "electron";
 
-class UserConfig {
+export class UserConfig {
     private readonly _path: string;
     private readonly _data: Object;
     private _savePath: string;
