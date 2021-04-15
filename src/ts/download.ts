@@ -35,9 +35,14 @@ const download = async (url: string) => {
             }
             fileName += ".mp3"; // Appends the file extension after it is cleaned and fully set
             if (config instanceof UserConfig) {
-                video.save(config.savePath)
+                video.save(config.savePath, fileName).then(file => {
+                    // later on this will be an AudioFile class
+                    console.log("done!");
+                }).catch(err => {
+                    console.error(err);
+                    reject(err);
+                });
             }
         });
     });
 }
-
