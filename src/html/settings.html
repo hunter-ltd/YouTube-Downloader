@@ -11,11 +11,14 @@
   <h1>Settings</h1>
 </div>
 <div class="input-field">
-  <input type="text" id="save-folder" name="save-folder" placeholder="e.g. ~/Downloads">
-  <label for="save-folder">Save Folder</label>
+  <input type="text" id="save-folder" name="save-folder" placeholder="Click &quot;select folder&quot; or type the path">
+  <label for="save-folder" id="save-folder-label">Select folder</label>
 </div>
 <div class="button-wrapper">
   <button type="button" id="save-btn" name="save-btn">Save</button>
 </div>
+<script>
+  require('../settings.js');
+</script>
 </body>
 </html>
