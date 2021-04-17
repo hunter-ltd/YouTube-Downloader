@@ -70,7 +70,7 @@ const download = async (url: string) => {
 }
 
 (() => {
-    downloadBtn.addEventListener('click', ev => {
+    downloadBtn.addEventListener('click', () => {
         download((<HTMLInputElement>document.getElementById('url')).value).then(file => {
             updateStatus(`${basename(file.filePath)} saved successfully`, "#00c210");
             file.open();
@@ -79,6 +79,17 @@ const download = async (url: string) => {
             let errorMessage: string = /ENOTFOUND/.test(err.message) ?
                 "Error: Invalid URL. Check your internet connection" : "Error: " + err.message;
             updateStatus(errorMessage, "#e01400");
+        });
+    });
+
+    // Enter key downloads file
+    [
+        document.getElementById('url'),
+        document.getElementById('file-name')
+    ].forEach(element => {
+        element.addEventListener('keyup', ev => {
+            ev.preventDefault();
+            if (ev.key === 'Enter') downloadBtn.click();
         });
     });
 })();
