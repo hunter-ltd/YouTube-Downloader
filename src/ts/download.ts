@@ -1,6 +1,7 @@
 import {makeNewConfig, UserConfig} from "./config";
 import * as ytdl from "ytdl-core";
 import {YouTubeVideo} from "./video";
+import {AudioFile} from "./audiofile";
 
 /**
  * Removes extra parameters after the watch ID in a YouTube link. The extra information occasionally causes problems
@@ -35,14 +36,23 @@ const download = async (url: string) => {
             }
             fileName += ".mp3"; // Appends the file extension after it is cleaned and fully set
             if (config instanceof UserConfig) {
-                video.save(config.savePath, fileName).then(file => {
+                video.save(config.savePath, fileName).then((file: AudioFile) => {
                     // later on this will be an AudioFile class
                     console.log("done!");
+                    file.open()
                 }).catch(err => {
-                    console.error(err);
                     reject(err);
                 });
             }
+        }).catch(err => {
+            // TODO: if ENOTFOUND in message, check internet connection
+            reject(err);
         });
     });
 }
+
+(() => {
+    document.getElementById('download-btn').addEventListener('click', ev => {
+        download((<HTMLInputElement>document.getElementById('url')).value);
+    });
+})();
