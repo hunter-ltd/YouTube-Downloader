@@ -45,7 +45,10 @@
     }
   },
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.0"
+    "electron-squirrel-startup": "^1.0.0",
+    "@ffmpeg-installer/ffmpeg": "^1.0.20",
+    "fluent-ffmpeg": "^2.1.2",
+    "ytdl-core": "^4.5.0"
   },
   "devDependencies": {
     "@electron-forge/cli": "^6.0.0-beta.54",
