@@ -24,7 +24,7 @@ const createWindow = () => {
         {
           label: 'GitHub Page',
           click() {
-            shell.openExternal('https://github.com/hunter-ltd/StreamerTools')
+            shell.openExternal('https://github.com/hunter-ltd/YouTube-Downloader')
           }
         },
         { label: "About YTDL GUI", role: "about" },
@@ -41,7 +41,7 @@ const createWindow = () => {
                 contextIsolation: false
               }
             });
-            settingsWindow.webContents.openDevTools();
+            // settingsWindow.webContents.openDevTools();
             settingsWindow.on('close', () => {
               settingsWindow = null;
             });
@@ -80,7 +80,7 @@ const createWindow = () => {
   mainWindow.loadFile(path.join(__dirname, "html", 'index.html'));
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 };
 
 // This method will be called when Electron has finished
