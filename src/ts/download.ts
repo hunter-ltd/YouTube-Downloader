@@ -2,6 +2,20 @@ import {makeNewConfig, UserConfig} from "./config";
 import * as ytdl from "ytdl-core";
 import {YouTubeVideo} from "./video";
 import {AudioFile} from "./audiofile";
+import {basename} from "path";
+
+const downloadBtn = (<HTMLButtonElement>document.getElementById('download-btn'));
+const statusElement = (<HTMLParagraphElement>document.getElementById('status'));
+
+/**
+ * Update the status element in the GUI
+ * @param message Status message
+ * @param color Optional text color (defaults to gray)
+ */
+const updateStatus = (message: string, color: string = 'gray') => {
+    statusElement.style.color = color;
+    statusElement.innerHTML = message;
+}
 
 /**
  * Removes extra parameters after the watch ID in a YouTube link. The extra information occasionally causes problems
@@ -33,6 +47,8 @@ const download = async (url: string) => {
             reject(err);
         });
 
+        updateStatus('Retrieving video info...');
+
         await ytdl.getBasicInfo(cleanYtUrl(url)).then(info => {
             const video = new YouTubeVideo(info.videoDetails.video_url);
             let fileName: string = removeIllegalChars((<HTMLInputElement>document.getElementById('file-name')).value.trim());
@@ -48,14 +64,21 @@ const download = async (url: string) => {
                     .catch(err => reject(err));
             }
         }).catch(err => {
-            // TODO: if ENOTFOUND in message, check internet connection
             reject(err);
         });
     });
 }
 
 (() => {
-    document.getElementById('download-btn').addEventListener('click', ev => {
-        download((<HTMLInputElement>document.getElementById('url')).value);
+    downloadBtn.addEventListener('click', ev => {
+        download((<HTMLInputElement>document.getElementById('url')).value).then(file => {
+            updateStatus(`${basename(file.filePath)} saved successfully`, "#00c210");
+            file.open();
+        }).catch(err => {
+            console.error(err);
+            let errorMessage: string = /ENOTFOUND/.test(err.message) ?
+                "Error: Invalid URL. Check your internet connection" : "Error: " + err.message;
+            updateStatus(errorMessage, "#e01400");
+        });
     });
 })();
