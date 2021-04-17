@@ -23,8 +23,8 @@ export class YouTubeVideo {
             let stream = ytdl(this._url, {filter: "audioonly"}),
                 output = ffmpeg(stream)
                     .on('start', () => {
-                    // TODO: set start status
-                    console.log("downloading...")
+                    document.getElementById('status').innerHTML = 'Downloading...';
+                    console.log(`Downloading ${this._url} >> ${path}`);
                 })
                     .on('end', () => resolve(new AudioFile(path)))
                     .save(path);
