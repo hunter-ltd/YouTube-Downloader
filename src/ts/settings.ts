@@ -36,6 +36,7 @@ class SettingsMenu {
             this._config = config;
             this.folderElement.value = this.config.savePath;
         });
+
         this.selectBtn.addEventListener('click', ev => {
             ipcRenderer.invoke("showOpenDialog").then(async (result: Electron.OpenDialogReturnValue) => {
                 // While the function being called in main.ts technically returns a promise, it automatically resolves

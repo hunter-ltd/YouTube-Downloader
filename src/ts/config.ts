@@ -4,8 +4,14 @@ import {ipcRenderer} from "electron";
 
 export class UserConfig {
     private readonly _path: string;
-    private readonly _data: Object;
+    private _data: Object;
     private _savePath: string;
+
+    set data(value: Object) {
+        this._data = value;
+        this._savePath = value['savePath'];
+    }
+
     get path(): string {
         return this._path;
     }
@@ -22,15 +28,13 @@ export class UserConfig {
 
     constructor(path: string) {
         this._path = path;
-        this._data = this.parseDataFile();
-        this._savePath = this._data['savePath'];
     }
 
-    private parseDataFile = () => {
-        try {
-            return JSON.parse(fs.readFileSync(this.path).toString());
-        } catch (e) {
-            return new Promise((resolve, reject) => {
+    public parseDataFile = () => {
+        return new Promise<Object>((resolve, reject) => {
+            try {
+                resolve(JSON.parse(fs.readFileSync(this.path).toString()));
+            } catch (e) {
                 ipcRenderer.invoke("getPath", "downloads").then(result => {
                     let data: Object = {
                         savePath: result
@@ -38,8 +42,8 @@ export class UserConfig {
                     fs.writeFileSync(this.path, JSON.stringify(data)); // creates and writes to the settings file
                     resolve(data);
                 });
-            }).then(result => result);
-        }
+            }
+        });
     }
 }
 
@@ -48,9 +52,13 @@ export class UserConfig {
  * @returns {Promise<UserConfig>} A promise resolving with the UserConfig object and rejecting with an error
  */
 export async function makeNewConfig(): Promise<UserConfig> {
-    return await new Promise<UserConfig>((resolve, reject) => {
-        ipcRenderer.invoke("getPath", "userData").then(value => {
-            resolve(new UserConfig(path.resolve(value, "userSettings.json")));
+    return new Promise<UserConfig>((resolve, reject) => {
+        ipcRenderer.invoke("getPath", "userData").then(async value => {
+            let config = new UserConfig(path.resolve(value, "userSettings.json"));
+            await config.parseDataFile().then(value => {
+                config.data = value;
+                resolve(config)
+            });
         }).catch(err => {
             reject(err);
         });
