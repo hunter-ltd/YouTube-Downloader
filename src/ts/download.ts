@@ -22,27 +22,30 @@ const removeIllegalChars = (filename: string) => {
     return /[\\/:*?"<>|]/g.test(filename) ? filename.replace(/[\\/:*?"<>|]/g, "") : filename;
 }
 
+/**
+ * Connects all the parts to download a file from the given YouTube link
+ * @param url YouTube video to download
+ * @returns {Promise<AudioFile>} The downloaded AudioFile if resolved, the error if otherwise
+ */
 const download = async (url: string) => {
-    return await new Promise(async (resolve, reject) => {
+    return await new Promise<AudioFile>(async (resolve, reject) => {
         const config = await makeNewConfig().then(config => config).catch(err => {
             reject(err);
         });
 
         await ytdl.getBasicInfo(cleanYtUrl(url)).then(info => {
             const video = new YouTubeVideo(info.videoDetails.video_url);
-            let fileName: string = (<HTMLInputElement>document.getElementById('file-name')).value.trim();
+            let fileName: string = removeIllegalChars((<HTMLInputElement>document.getElementById('file-name')).value.trim());
             if (fileName.length === 0) {
                 fileName = info.videoDetails.title;
             }
-            fileName += ".mp3"; // Appends the file extension after it is cleaned and fully set
+            if (!(fileName.endsWith('.mp3') || fileName.endsWith('.wav'))) {
+                fileName += '.mp3'; // Append an extension if one isn't given (it's not meant to be)
+            }
             if (config instanceof UserConfig) {
-                video.save(config.savePath, fileName).then((file: AudioFile) => {
-                    // later on this will be an AudioFile class
-                    console.log("done!");
-                    file.open()
-                }).catch(err => {
-                    reject(err);
-                });
+                video.save(config.savePath, fileName)
+                    .then((file: AudioFile) => resolve(file))
+                    .catch(err => reject(err));
             }
         }).catch(err => {
             // TODO: if ENOTFOUND in message, check internet connection
