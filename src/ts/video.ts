@@ -2,6 +2,7 @@ import * as ffmpeg from "fluent-ffmpeg";
 import {path as ffmpegPath} from "@ffmpeg-installer/ffmpeg";
 import * as ytdl from "ytdl-core";
 import {join} from "path";
+import {AudioFile} from "./audiofile";
 
 ffmpeg.setFfmpegPath(ffmpegPath);
 
@@ -20,12 +21,15 @@ export class YouTubeVideo {
         path = fileName === undefined ? path : join(path, fileName);
         return new Promise(async (resolve, reject) => {
             let stream = ytdl(this._url, {filter: "audioonly"}),
-                output = ffmpeg(stream).save(path);
+                output = ffmpeg(stream)
+                    .on('start', () => {
+                    // TODO: set start status
+                    console.log("downloading...")
+                })
+                    .on('end', () => resolve(new AudioFile(path)))
+                    .save(path);
+
             [stream, output].forEach(item => item.on('error', err => reject(err)));
-            output.on('start', () => {
-                // TODO: set start status
-                console.log("downloading...")
-            }).on('end', () => resolve(path)); // TODO: resolve with a custom audio file class later on
         });
     }
 }
