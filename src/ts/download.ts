@@ -39,9 +39,10 @@ const removeIllegalChars = (filename: string) => {
 /**
  * Connects all the parts to download a file from the given YouTube link
  * @param url YouTube video to download
+ * @param fileName Name to save the file as
  * @returns {Promise<AudioFile>} The downloaded AudioFile if resolved, the error if otherwise
  */
-const download = async (url: string) => {
+const download = async (url: string, fileName: string) => {
     return await new Promise<AudioFile>(async (resolve, reject) => {
         const config = await makeNewConfig().then(config => config).catch(err => {
             reject(err);
@@ -51,7 +52,7 @@ const download = async (url: string) => {
 
         await ytdl.getBasicInfo(cleanYtUrl(url)).then(info => {
             const video = new YouTubeVideo(info.videoDetails.video_url);
-            let fileName: string = removeIllegalChars((<HTMLInputElement>document.getElementById('file-name')).value.trim());
+            fileName = removeIllegalChars(fileName);
             if (fileName.length === 0) {
                 fileName = info.videoDetails.title;
             }
@@ -71,7 +72,8 @@ const download = async (url: string) => {
 
 (() => {
     downloadBtn.addEventListener('click', () => {
-        download((<HTMLInputElement>document.getElementById('url')).value).then(file => {
+        download((<HTMLInputElement>document.getElementById('url')).value.trim(),
+            (<HTMLInputElement>document.getElementById('file-name')).value.trim()).then(file => {
             updateStatus(`${basename(file.filePath)} saved successfully`, "#00c210");
             file.open();
         }).catch(err => {
