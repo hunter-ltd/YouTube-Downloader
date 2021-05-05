@@ -19,12 +19,19 @@ export class YouTubeVideo {
      */
     public save = async (path: string, fileName?: string) => {
         path = fileName === undefined ? path : join(path, fileName);
+        const progressBar = document.getElementById('progress-bar');
         return new Promise(async (resolve, reject) => {
             let stream = ytdl(this._url, {filter: "audioonly"})
                 .on('error', err => reject(err))
                 .on('progress', (_, current, total) => {
-                    document.getElementById('status').innerHTML = `${Math.round(100 * (current / total))} % downloaded`
+                    let percentComplete = Math.round(100 * (current / total));
+                    document.getElementById('status').innerHTML = "";
+                    progressBar.style.width = percentComplete + "%";
+                    progressBar.innerHTML = percentComplete + "%"
                 })
+
+            // TODO: progress bar change to green on finish (do away with old text-based status indicator)
+
                 ffmpeg(stream)
                     .on('start', () => {
                     console.log(`ffmpeg started: ${this._url} >> ${path}`);
