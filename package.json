@@ -20,8 +20,7 @@
   "config": {
     "forge": {
       "packagerConfig": {
-        "icon": "./assets/icon",
-        "executableName": "youtube-downloader"
+        "icon": "./assets/icon"
       },
       "makers": [
         {
@@ -48,8 +47,8 @@
     }
   },
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.0",
     "@ffmpeg-installer/ffmpeg": "^1.0.20",
+    "electron-squirrel-startup": "^1.0.0",
     "fluent-ffmpeg": "^2.1.2",
     "ytdl-core": "^4.5.0"
   },
@@ -60,6 +59,8 @@
     "@electron-forge/maker-squirrel": "^6.0.0-beta.54",
     "@electron-forge/maker-zip": "^6.0.0-beta.54",
     "@ffmpeg-installer/ffmpeg": "^1.0.20",
+    "@types/fluent-ffmpeg": "^2.1.17",
+    "@types/node": "^14.14.37",
     "electron": "12.0.4",
     "fluent-ffmpeg": "^2.1.2",
     "ytdl-core": "^4.5.0"
