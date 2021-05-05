@@ -32,7 +32,7 @@ const createWindow = () => {
         {
           label: 'Save folder',
           click() {
-            var settingsWindow = new BrowserWindow({
+            let settingsWindow = new BrowserWindow({
               width: 500,
               height: 450,
               frame: true,
