@@ -103,6 +103,17 @@ input:not(:placeholder-shown) + label:hover {
   color: var(--primary-text-color);
 }
 
+#progress-bar {
+  width: 0;
+  height: 30px;
+  background-color: var(--glow-color);
+  text-align: center;
+  line-height: 30px;
+  color: var(--primary-text-color);
+  border-radius: 6px;
+  transition: all 100ms ease-in-out;
+}
+
 .button-wrapper button {
   text-transform: uppercase;
   border: none;
