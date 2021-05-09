@@ -1,5 +1,5 @@
 import {makeNewConfig, UserConfig} from "./config";
-import * as ytdl from "ytdl-core";
+import ytdl from "ytdl-core";
 import {YouTubeVideo} from "./video";
 import {AudioFile} from "./audiofile";
 import {basename} from "path";
