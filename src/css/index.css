@@ -30,7 +30,8 @@ body p {
   margin-bottom: 1em;
 }
 
-label, input {
+label,
+input {
   transition: all 0.2s;
   text-align: left;
 }
