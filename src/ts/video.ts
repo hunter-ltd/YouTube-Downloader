@@ -20,7 +20,7 @@ export class YouTubeVideo {
     public save = async (path: string, fileName?: string) => {
         path = fileName === undefined ? path : join(path, fileName);
         const progressBar = document.getElementById('progress-bar');
-        return new Promise(async (resolve, reject) => {
+        return new Promise<AudioFile>(async (resolve, reject) => {
             let stream = ytdl(this._url, {filter: "audioonly"})
                 .on('error', err => reject(err))
                 .on('progress', (_, current, total) => {
@@ -37,7 +37,7 @@ export class YouTubeVideo {
                     console.log(`ffmpeg started: ${this._url} >> ${path}`);
                 })
                     .on('end', () => resolve(new AudioFile(path)))
-                    .on('error', err => reject(err))
+                    .on('error', (err: Error) => reject(err))
                     .save(path);
         });
     }
