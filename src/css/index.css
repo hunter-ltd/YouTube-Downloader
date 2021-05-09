@@ -113,6 +113,7 @@ input:not(:placeholder-shown) + label:hover {
   color: var(--primary-text-color);
   border-radius: 6px;
   transition: all 100ms ease-in-out;
+  overflow: hidden;
 }
 
 .button-wrapper button {
