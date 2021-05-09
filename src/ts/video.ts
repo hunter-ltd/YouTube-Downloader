@@ -1,6 +1,6 @@
-import * as ffmpeg from "fluent-ffmpeg";
+import ffmpeg from "fluent-ffmpeg";
 import {path as ffmpegPath} from "@ffmpeg-installer/ffmpeg";
-import * as ytdl from "ytdl-core";
+import ytdl from "ytdl-core";
 import {join} from "path";
 import {AudioFile} from "./audiofile";
 
