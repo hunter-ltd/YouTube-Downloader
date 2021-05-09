@@ -60,6 +60,7 @@
     "@electron-forge/maker-squirrel": "^6.0.0-beta.54",
     "@electron-forge/maker-zip": "^6.0.0-beta.54",
     "@ffmpeg-installer/ffmpeg": "^1.0.20",
+    "@types/ffmpeg-installer__ffmpeg": "^1.0.0",
     "@types/fluent-ffmpeg": "^2.1.17",
     "@types/node": "^14.14.37",
     "electron": "12.0.4",
