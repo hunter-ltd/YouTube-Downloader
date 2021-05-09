@@ -4,17 +4,27 @@ import { YouTubeVideo } from "./video";
 import { AudioFile } from "./audiofile";
 import { basename } from "path";
 
-const downloadBtn = <HTMLButtonElement>document.getElementById("download-btn");
-const statusElement = <HTMLParagraphElement>document.getElementById("status");
+const downloadAudioBtn = <HTMLButtonElement>(
+  document.getElementById("download-btn-audio")
+);
+const downloadVideoBtn = <HTMLButtonElement>(
+  document.getElementById("download-btn-video")
+);
+const progressBar = document.getElementById("progress-bar");
 
 /**
  * Update the status element in the GUI
  * @param message Status message
  * @param color Optional text color (defaults to gray)
  */
-const updateStatus = (message: string, color: string = "gray") => {
-  statusElement.style.color = color;
-  statusElement.innerHTML = message;
+export const updateProgressBar = (
+  message: string,
+  color: string = "gray",
+  width: number = 100
+) => {
+  progressBar.style.backgroundColor = color;
+  progressBar.innerHTML = message;
+  progressBar.style.width = width + "%";
 };
 
 /**
@@ -40,11 +50,16 @@ const removeIllegalChars = (filename: string) => {
 
 /**
  * Connects all the parts to download a file from the given YouTube link
+ * @param video Wether or not to include video
  * @param url YouTube video to download
  * @param fileName Name to save the file as
  * @returns {Promise<AudioFile>} The downloaded AudioFile if resolved, the error if otherwise
  */
-const download = async (url: string, fileName: string) => {
+const download = async (
+  includeVideo: boolean,
+  url: string,
+  fileName: string
+) => {
   return await new Promise<AudioFile>(async (resolve, reject) => {
     const config = await makeNewConfig()
       .then((config) => config)
@@ -52,7 +67,7 @@ const download = async (url: string, fileName: string) => {
         reject(err);
       });
 
-    updateStatus("Retrieving video info...");
+    updateProgressBar("Retrieving video info...");
 
     await ytdl
       .getBasicInfo(cleanYtUrl(url))
@@ -67,7 +82,7 @@ const download = async (url: string, fileName: string) => {
         }
         if (config instanceof UserConfig) {
           video
-            .saveVideo(config.savePath, fileName)
+            .save(includeVideo, config.savePath, fileName)
             .then((file: AudioFile) => resolve(file))
             .catch((err) => reject(err));
         }
@@ -79,25 +94,28 @@ const download = async (url: string, fileName: string) => {
 };
 
 (() => {
-  downloadBtn.addEventListener("click", () => {
-    download(
-      (<HTMLInputElement>document.getElementById("url")).value.trim(),
-      (<HTMLInputElement>document.getElementById("file-name")).value.trim()
-    )
-      .then((file) => {
-        updateStatus(
-          `${basename(file.filePath)} saved successfully`,
-          "#00c210"
-        );
-        file.open();
-      })
-      .catch((err) => {
-        console.error(err);
-        let errorMessage: string = /ENOTFOUND/.test(err.message)
-          ? "Error: Invalid URL. Check your internet connection"
-          : "Error: " + err.message;
-        updateStatus(errorMessage, "#e01400");
-      });
+  [downloadAudioBtn, downloadVideoBtn].forEach((button) => {
+    button.addEventListener("click", (event) => {
+      download(
+        (<HTMLElement>event.target).id.includes("video"),
+        (<HTMLInputElement>document.getElementById("url")).value.trim(),
+        (<HTMLInputElement>document.getElementById("file-name")).value.trim()
+      )
+        .then((file) => {
+          updateProgressBar(
+            `${basename(file.filePath)} saved successfully`,
+            "#00c210"
+          );
+          file.open();
+        })
+        .catch((err) => {
+          console.error(err);
+          let errorMessage: string = /ENOTFOUND/.test(err.message)
+            ? "Error: Invalid URL. Check your internet connection"
+            : "Error: " + err.message;
+          updateProgressBar(errorMessage, "#e01400");
+        });
+    });
   });
 
   // Enter key downloads file
@@ -107,7 +125,7 @@ const download = async (url: string, fileName: string) => {
   ].forEach((element) => {
     element.addEventListener("keyup", (ev) => {
       ev.preventDefault();
-      if (ev.key === "Enter") downloadBtn.click();
+      if (ev.key === "Enter") downloadAudioBtn.click();
     });
   });
 })();
