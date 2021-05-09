@@ -3,7 +3,12 @@
     "module": "commonjs",
     "target": "es5",
     "sourceMap": true,
-    "outDir": "build"
+    "rootDir": "src/ts",
+    "outDir": "build",
+    "removeComments": true,
+    "noImplicitAny": true,
+    "strictFunctionTypes": true,
+    "noImplicitThis": true,
   },
   "exclude": [
     "node_modules",
