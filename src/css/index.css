@@ -30,7 +30,8 @@ body p {
   margin-bottom: 1em;
 }
 
-label, input {
+label,
+input {
   transition: all 0.2s;
   text-align: left;
 }
@@ -112,6 +113,7 @@ input:not(:placeholder-shown) + label:hover {
   color: var(--primary-text-color);
   border-radius: 6px;
   transition: all 100ms ease-in-out;
+  overflow: hidden;
 }
 
 .button-wrapper button {

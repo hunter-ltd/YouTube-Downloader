@@ -1,37 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>YouTube MP3 Downloader</title>
-  <link rel="stylesheet" href="../css/index.css">
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
-</head>
-<body>
-<div class="header">
-  <h1>YouTube MP3 Downloader</h1>
-  <p><i>Note: Some videos may not work due to region or other content restrictions</i></p>
-</div>
-<br>
-<div class="input-field">
-  <input type="text" name="url" id="url" placeholder="YouTube URL or video ID">
-  <label for="url">URL</label>
-</div>
-<div class="input-field">
-  <input type="text" name="file-name" id="file-name" placeholder="File name (optional)">
-  <label for="file-name">File name</label>
-</div>
-<div class="button-wrapper">
-  <button type="button" id="download-btn" name="download-btn">Download</button>
-</div>
-<div class="status-div">
-  <p id="status" style="font-style: italic;"></p>
-  <div id="progress-bar"></div>
-</div>
-<div class="dl-options"></div>
-<script>
-  require('../config.js');
-  require('../download.js')
-</script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>YouTube MP3 Downloader</title>
+    <link rel="stylesheet" href="../css/index.css" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="header">
+      <h1>YouTube MP3 Downloader</h1>
+      <p>
+        <i
+          >Note: Some videos may not work due to region or other content
+          restrictions</i
+        >
+      </p>
+    </div>
+    <br />
+    <div class="input-field">
+      <input
+        type="text"
+        name="url"
+        id="url"
+        placeholder="YouTube URL or video ID"
+      />
+      <label for="url">URL</label>
+    </div>
+    <div class="input-field">
+      <input
+        type="text"
+        name="file-name"
+        id="file-name"
+        placeholder="File name (optional)"
+      />
+      <label for="file-name">File name</label>
+    </div>
+    <div class="button-wrapper">
+      <button type="button" id="download-btn-video" name="download-btn-video">
+        Download Video
+      </button>
+      <button type="button" id="download-btn-audio" name="download-btn-audio">
+        Download Audio
+      </button>
+    </div>
+    <div class="status-div">
+      <div id="progress-bar"></div>
+    </div>
+    <div class="dl-options"></div>
+    <script>
+      require("../config.js");
+      require("../download.js");
+    </script>
+  </body>
 </html>

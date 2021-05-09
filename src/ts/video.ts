@@ -1,44 +1,92 @@
 import ffmpeg from "fluent-ffmpeg";
-import {path as ffmpegPath} from "@ffmpeg-installer/ffmpeg";
+import { path as ffmpegPath } from "@ffmpeg-installer/ffmpeg";
 import ytdl from "ytdl-core";
-import {join} from "path";
-import {AudioFile} from "./audiofile";
+import { join } from "path";
+import { AudioFile } from "./audiofile";
+import { unlink } from "fs";
+import { updateProgressBar } from "./download";
 
 ffmpeg.setFfmpegPath(ffmpegPath);
 
 export class YouTubeVideo {
-    private readonly _url: string;
-    constructor(url: string) {
-        this._url = url;
-    }
+  private readonly _url: string;
+  constructor(url: string) {
+    this._url = url;
+  }
 
-    /**
-     * Downloads and saves the video from YouTube
-     * @param path Where to save the video
-     * @param fileName Optional file name (otherwise assumed to be included in path)
-     */
-    public save = async (path: string, fileName?: string) => {
-        path = fileName === undefined ? path : join(path, fileName);
-        const progressBar = document.getElementById('progress-bar');
-        return new Promise<AudioFile>(async (resolve, reject) => {
-            let stream = ytdl(this._url, {filter: "audioonly"})
-                .on('error', err => reject(err))
-                .on('progress', (_, current, total) => {
-                    let percentComplete = Math.round(100 * (current / total));
-                    document.getElementById('status').innerHTML = "";
-                    progressBar.style.width = percentComplete + "%";
-                    progressBar.innerHTML = percentComplete + "%"
-                })
+  /**
+   * Downloads and saves the YouTube video to the given file, optionally including video
+   * @param video Whether or not to include video
+   * @param path Path to save data to
+   * @param fileName Optional file name. Otherwise, `path` is assumed to have it
+   * @returns Promise resolving with file and rejecting with error
+   */
+  public save = async (video: boolean, path: string, fileName?: string) => {
+    return video
+      ? this.saveVideo(path, fileName)
+      : this.saveAudio(path, fileName);
+  };
 
-            // TODO: progress bar change to green on finish (do away with old text-based status indicator)
+  private saveVideo = async (path: string, fileName?: string) => {
+    return new Promise<AudioFile>(async (resolveOuter, rejectOuter) => {
+      this.saveAudio(path, fileName).then((file) => {
+        path = file.filePath.replace(".mp3", ".mp4");
+        const videoStream = ytdl(this._url, {
+          filter: "videoonly",
+          quality: "highestvideo",
+        })
+          .on("error", (err) => rejectOuter(err))
+          .on("progress", (_, current, total) => {
+            let percentComplete = Math.round(100 * (current / total));
+            updateProgressBar(
+              "Video: " + percentComplete + "%",
+              "#e01400",
+              percentComplete
+            );
+          });
 
-                ffmpeg(stream)
-                    .on('start', () => {
-                    console.log(`ffmpeg started: ${this._url} >> ${path}`);
-                })
-                    .on('end', () => resolve(new AudioFile(path)))
-                    .on('error', (err: Error) => reject(err))
-                    .save(path);
+        ffmpeg(videoStream)
+          .input(file.filePath)
+          .on("end", () => {
+            unlink(file.filePath, (err) => {
+              if (err) {
+                rejectOuter(err);
+              }
+              resolveOuter(new AudioFile(path));
+            });
+          })
+          .on("error", (err) => rejectOuter(err))
+          .save(path);
+      });
+    });
+  };
+
+  /**
+   * Downloads and saves the video from YouTube
+   * @param path Where to save the video
+   * @param fileName Optional file name (otherwise assumed to be included in path)
+   */
+  private saveAudio = async (path: string, fileName?: string) => {
+    path = fileName === undefined ? path : join(path, fileName);
+    return new Promise<AudioFile>(async (resolve, reject) => {
+      const stream = ytdl(this._url, { filter: "audioonly" })
+        .on("error", (err) => reject(err))
+        .on("progress", (_, current, total) => {
+          let percentComplete = Math.round(100 * (current / total));
+          updateProgressBar(
+            "Audio: " + percentComplete + "%",
+            "#e01400",
+            percentComplete
+          );
         });
-    }
+
+      ffmpeg(stream)
+        .on("start", () => {
+          console.log(`ffmpeg started: ${this._url} >> ${path}`);
+        })
+        .on("end", () => resolve(new AudioFile(path)))
+        .on("error", (err: Error) => reject(err))
+        .save(path);
+    });
+  };
 }

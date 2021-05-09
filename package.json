@@ -1,8 +1,8 @@
 {
   "name": "youtube-downloader",
   "productName": "YouTube Downloader 2.0",
-  "version": "2.0.0",
-  "description": "My Electron application description",
+  "version": "2.1.0",
+  "description": "A YouTube video downloader that supports both audio and limited video",
   "main": "build/main.js",
   "scripts": {
     "start": "node src/js/compile.js && electron-forge start",
