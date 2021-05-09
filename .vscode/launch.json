@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug Renderer Process",
+            "name": "Electron Renderer",
             "request": "launch",
             "type": "pwa-chrome",
             "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
@@ -13,10 +13,14 @@
                 "${workspaceRoot}/build/main.js",
                 "--remote-debugging-port=9222"
             ],
-            "webRoot": "${workspaceFolder}"
+            "skipFiles": [
+              "<node_internals>/**"
+            ],
+            "webRoot": "${workspaceFolder}/build",
+            "preLaunchTask": "compile.js"
         },
       {
-        "name": "Debug Main Process",
+        "name": "Electron Main",
         "type": "node",
         "request": "launch",
         "cwd": "${workspaceFolder}",
@@ -25,7 +29,10 @@
           "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron.cmd"
         },
         "args" : ["."],
-        "outputCapture": "std"
+        "outputCapture": "std",
+        "skipFiles": [
+          "<node_internals>/**"
+        ],
       }
     ]
   }
