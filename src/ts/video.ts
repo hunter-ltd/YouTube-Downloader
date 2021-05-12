@@ -2,7 +2,7 @@ import ffmpeg from "fluent-ffmpeg";
 import { path as ffmpegPath } from "@ffmpeg-installer/ffmpeg";
 import ytdl from "ytdl-core";
 import { join } from "path";
-import { AudioFile } from "./audiofile";
+import { File } from "./audiofile";
 import { unlink } from "fs";
 import { updateProgressBar } from "./download";
 
@@ -28,7 +28,7 @@ export class YouTubeVideo {
   };
 
   private saveVideo = async (path: string, fileName?: string) => {
-    return new Promise<AudioFile>(async (resolveOuter, rejectOuter) => {
+    return new Promise<File>(async (resolveOuter, rejectOuter) => {
       this.saveAudio(path, fileName).then((file) => {
         path = file.filePath.replace(".mp3", ".mp4");
         const videoStream = ytdl(this._url, {
@@ -52,7 +52,7 @@ export class YouTubeVideo {
               if (err) {
                 rejectOuter(err);
               }
-              resolveOuter(new AudioFile(path));
+              resolveOuter(new File(path));
             });
           })
           .on("error", (err) => rejectOuter(err))
@@ -61,14 +61,9 @@ export class YouTubeVideo {
     });
   };
 
-  /**
-   * Downloads and saves the video from YouTube
-   * @param path Where to save the video
-   * @param fileName Optional file name (otherwise assumed to be included in path)
-   */
   private saveAudio = async (path: string, fileName?: string) => {
     path = fileName === undefined ? path : join(path, fileName);
-    return new Promise<AudioFile>(async (resolve, reject) => {
+    return new Promise<File>(async (resolve, reject) => {
       const stream = ytdl(this._url, { filter: "audioonly" })
         .on("error", (err) => reject(err))
         .on("progress", (_, current, total) => {
@@ -84,7 +79,7 @@ export class YouTubeVideo {
         .on("start", () => {
           console.log(`ffmpeg started: ${this._url} >> ${path}`);
         })
-        .on("end", () => resolve(new AudioFile(path)))
+        .on("end", () => resolve(new File(path)))
         .on("error", (err: Error) => reject(err))
         .save(path);
     });

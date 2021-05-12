@@ -1,7 +1,7 @@
 import { makeNewConfig, UserConfig } from "./config";
 import ytdl from "ytdl-core";
 import { YouTubeVideo } from "./video";
-import { AudioFile } from "./audiofile";
+import { File } from "./audiofile";
 import { basename } from "path";
 
 const downloadAudioBtn = <HTMLButtonElement>(
@@ -53,14 +53,14 @@ const removeIllegalChars = (filename: string) => {
  * @param video Wether or not to include video
  * @param url YouTube video to download
  * @param fileName Name to save the file as
- * @returns {Promise<AudioFile>} The downloaded AudioFile if resolved, the error if otherwise
+ * @returns {Promise<File>} The downloaded File object if resolved, the error if otherwise
  */
 const download = async (
   includeVideo: boolean,
   url: string,
   fileName: string
-) => {
-  return await new Promise<AudioFile>(async (resolve, reject) => {
+): Promise<File> => {
+  return await new Promise<File>(async (resolve, reject) => {
     const config = await makeNewConfig()
       .then((config) => config)
       .catch((err) => {
@@ -83,7 +83,7 @@ const download = async (
         if (config instanceof UserConfig) {
           video
             .save(includeVideo, config.savePath, fileName)
-            .then((file: AudioFile) => resolve(file))
+            .then((file: File) => resolve(file))
             .catch((err) => reject(err));
         }
       })
