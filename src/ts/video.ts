@@ -2,7 +2,7 @@ import ffmpeg from "fluent-ffmpeg";
 import { path as ffmpegPath } from "@ffmpeg-installer/ffmpeg";
 import ytdl from "ytdl-core";
 import { join } from "path";
-import { File } from "./audiofile";
+import { File } from "./file";
 import { unlink } from "fs";
 import { updateProgressBar } from "./download";
 

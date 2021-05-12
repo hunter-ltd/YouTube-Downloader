@@ -1,7 +1,7 @@
 import { makeNewConfig, UserConfig } from "./config";
 import ytdl from "ytdl-core";
 import { YouTubeVideo } from "./video";
-import { File } from "./audiofile";
+import { File } from "./file";
 import { basename } from "path";
 
 const downloadAudioBtn = <HTMLButtonElement>(
