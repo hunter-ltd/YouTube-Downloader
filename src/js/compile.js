@@ -1,4 +1,5 @@
 const { readdir, mkdir, copyFile } = require("fs").promises;
+const { unlinkSync, existsSync, rmSync } = require("fs");
 const { resolve, dirname, basename } = require("path");
 const { exec } = require("child_process");
 
@@ -17,7 +18,15 @@ async function* getAllFiles(dir) {
 
 const compile = () => {
   return new Promise(async (resolvePromise, rejectPromise) => {
-    exec("tsc");
+    const buildDir = resolve(process.cwd(), "build");
+
+    if (existsSync(buildDir)) {
+      // clear out the build directory
+      rmSync(buildDir, { recursive: true, force: true });
+    }
+
+    exec("tsc"); // compile TypeScript
+
     for await (const file of getAllFiles(resolve(process.cwd(), "src"))) {
       let parent = dirname(file);
       if (!(parent.endsWith("ts") || parent.endsWith("js"))) {
