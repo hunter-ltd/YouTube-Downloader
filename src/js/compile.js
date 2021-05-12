@@ -1,5 +1,5 @@
 const { readdir, mkdir, copyFile } = require("fs").promises;
-const { unlinkSync, existsSync, rmSync } = require("fs");
+const { existsSync, rmSync } = require("fs");
 const { resolve, dirname, basename } = require("path");
 const { exec } = require("child_process");
 
