@@ -1,4 +1,4 @@
-import { makeNewConfig, UserConfig } from "./config";
+import { makeNewConfig } from "./config";
 import ytdl from "ytdl-core";
 import { YouTubeVideo } from "./video";
 import { File } from "./file";
@@ -33,7 +33,7 @@ export const updateProgressBar = (
  * @param url URL to be cleaned
  * @returns {string} Cleaned URL
  */
-const cleanYtUrl = (url: string) => {
+const cleanYtUrl = (url: string): string => {
   return /&/.test(url) ? url.split("&")[0] : url;
 };
 
@@ -42,7 +42,7 @@ const cleanYtUrl = (url: string) => {
  * @param filename File name to check
  * @returns {string} Cleaned name
  */
-const removeIllegalChars = (filename: string) => {
+const removeIllegalChars = (filename: string): string => {
   return /[\\/:*?"<>|]/g.test(filename)
     ? filename.replace(/[\\/:*?"<>|]/g, "")
     : filename;
@@ -55,43 +55,26 @@ const removeIllegalChars = (filename: string) => {
  * @param fileName Name to save the file as
  * @returns {Promise<File>} The downloaded File object if resolved, the error if otherwise
  */
-const download = async (
+async function download(
   includeVideo: boolean,
   url: string,
   fileName: string
-): Promise<File> => {
-  return await new Promise<File>(async (resolve, reject) => {
-    const config = await makeNewConfig()
-      .then((config) => config)
-      .catch((err) => {
-        reject(err);
-      });
+): Promise<File> {
+  const config = await makeNewConfig();
 
-    updateProgressBar("Retrieving video info...");
+  updateProgressBar("Retrieving video info...");
+  const info = await ytdl.getBasicInfo(cleanYtUrl(url));
 
-    await ytdl
-      .getBasicInfo(cleanYtUrl(url))
-      .then((info) => {
-        const video = new YouTubeVideo(info.videoDetails.video_url);
-        fileName = removeIllegalChars(fileName);
-        if (fileName.length === 0) {
-          fileName = info.videoDetails.title;
-        }
-        if (!(fileName.endsWith(".mp3") || fileName.endsWith(".wav"))) {
-          fileName += ".mp3"; // Append an extension if one isn't given (it's not meant to be)
-        }
-        if (config instanceof UserConfig) {
-          video
-            .save(includeVideo, config.savePath, fileName)
-            .then((file: File) => resolve(file))
-            .catch((err) => reject(err));
-        }
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
-};
+  const video = new YouTubeVideo(info?.videoDetails.video_url);
+  fileName = removeIllegalChars(fileName);
+  if (fileName.length === 0) {
+    fileName = info?.videoDetails.title;
+  }
+  if (!(fileName.endsWith(".mp3") || fileName.endsWith(".wav"))) {
+    fileName += ".mp3";
+  }
+  return await video.save(includeVideo, config?.savePath, fileName);
+}
 
 (() => {
   [downloadAudioBtn, downloadVideoBtn].forEach((button) => {

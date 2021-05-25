@@ -28,36 +28,35 @@ export class YouTubeVideo {
   };
 
   private saveVideo = async (path: string, fileName?: string) => {
-    return new Promise<File>(async (resolveOuter, rejectOuter) => {
-      this.saveAudio(path, fileName).then((file) => {
-        path = file.filePath.replace(".mp3", ".mp4");
-        const videoStream = ytdl(this._url, {
-          filter: "videoonly",
-          quality: "highestvideo",
-        })
-          .on("error", (err) => rejectOuter(err))
-          .on("progress", (_, current, total) => {
-            let percentComplete = Math.round(100 * (current / total));
-            updateProgressBar(
-              "Video: " + percentComplete + "%",
-              "#e01400",
-              percentComplete
-            );
-          });
+    return new Promise<File>(async (resolve, reject) => {
+      const audioFile = await this.saveAudio(path, fileName);
+      path = audioFile.filePath.replace(".mp3", ".mp4");
+      const videoStream = ytdl(this._url, {
+        filter: "videoonly",
+        quality: "highestvideo",
+      })
+        .on("error", (err) => reject(err))
+        .on("progress", (_, current, total) => {
+          let percentComplete = Math.round(100 * (current / total));
+          updateProgressBar(
+            "Video: " + percentComplete + "%",
+            "#e01400",
+            percentComplete
+          );
+        });
 
-        ffmpeg(videoStream)
-          .input(file.filePath)
-          .on("end", () => {
-            unlink(file.filePath, (err) => {
-              if (err) {
-                rejectOuter(err);
-              }
-              resolveOuter(new File(path));
-            });
-          })
-          .on("error", (err) => rejectOuter(err))
-          .save(path);
-      });
+      ffmpeg(videoStream)
+        .input(audioFile.filePath)
+        .on("end", () => {
+          unlink(audioFile.filePath, (err) => {
+            if (err) {
+              reject(err);
+            }
+            resolve(new File(path));
+          });
+        })
+        .on("error", (err) => reject(err))
+        .save(path);
     });
   };
 
