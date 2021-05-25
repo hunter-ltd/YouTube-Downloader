@@ -56,18 +56,10 @@ export class UserConfig {
  * @returns {Promise<UserConfig>} A promise resolving with the UserConfig object and rejecting with an error
  */
 export async function makeNewConfig(): Promise<UserConfig> {
-  return new Promise<UserConfig>((resolve, reject) => {
-    ipcRenderer
-      .invoke("getPath", "userData")
-      .then(async (value: string) => {
-        let config = new UserConfig(path.resolve(value, "userSettings.json"));
-        await config.parseDataFile().then((value) => {
-          config.data = value;
-          resolve(config);
-        });
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
+  const userDataFolder = await ipcRenderer.invoke("getPath", "userData");
+  const config = new UserConfig(
+    path.resolve(userDataFolder, "sswSettings.json")
+  );
+  config.data = await config.parseDataFile();
+  return config;
 }
