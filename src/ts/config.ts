@@ -1,5 +1,6 @@
 import * as path from "path";
-import * as fs from "fs";
+import * as fsAsync from "fs/promises";
+import { writeFileSync } from "fs";
 import { ipcRenderer } from "electron";
 
 interface ConfigData {
@@ -27,28 +28,26 @@ export class UserConfig {
   set savePath(path: string) {
     this._savePath = path;
     this._data["savePath"] = path;
-    fs.writeFileSync(this.path, JSON.stringify(this._data));
+    writeFileSync(this.path, JSON.stringify(this._data));
   }
 
   constructor(path: string) {
     this._path = path;
   }
 
-  public parseDataFile = () => {
-    return new Promise<ConfigData>((resolve, _) => {
-      try {
-        resolve(JSON.parse(fs.readFileSync(this.path).toString()));
-      } catch (e) {
-        ipcRenderer.invoke("getPath", "downloads").then((result) => {
-          let data: ConfigData = {
-            savePath: result,
-          };
-          fs.writeFileSync(this.path, JSON.stringify(data)); // creates and writes to the settings file
-          resolve(data);
-        });
-      }
-    });
-  };
+  public async parseDataFile(): Promise<ConfigData> {
+    try {
+      return JSON.parse(
+        (await fsAsync.readFile(this.path)).toString()
+      ) as ConfigData;
+    } catch (err) {
+      const data: ConfigData = {
+        savePath: await ipcRenderer.invoke("getPath", "downloads"),
+      };
+      await fsAsync.writeFile(this.path, JSON.stringify(data));
+      return data;
+    }
+  }
 }
 
 /**
@@ -56,18 +55,10 @@ export class UserConfig {
  * @returns {Promise<UserConfig>} A promise resolving with the UserConfig object and rejecting with an error
  */
 export async function makeNewConfig(): Promise<UserConfig> {
-  return new Promise<UserConfig>((resolve, reject) => {
-    ipcRenderer
-      .invoke("getPath", "userData")
-      .then(async (value: string) => {
-        let config = new UserConfig(path.resolve(value, "userSettings.json"));
-        await config.parseDataFile().then((value) => {
-          config.data = value;
-          resolve(config);
-        });
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
+  const userDataFolder = await ipcRenderer.invoke("getPath", "userData");
+  const config = new UserConfig(
+    path.resolve(userDataFolder, "sswSettings.json")
+  );
+  config.data = await config.parseDataFile();
+  return config;
 }
