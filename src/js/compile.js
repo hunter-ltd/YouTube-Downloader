@@ -1,5 +1,5 @@
-const { readdir, mkdir, copyFile } = require("fs").promises;
-const { existsSync, rmSync } = require("fs");
+const { readdir, mkdir, rmdir, copyFile } = require("fs").promises;
+const { existsSync } = require("fs");
 const { resolve, dirname, basename } = require("path");
 const { exec } = require("child_process");
 
@@ -16,38 +16,31 @@ async function* getAllFiles(dir) {
   }
 }
 
-const compile = () => {
-  return new Promise(async (resolvePromise, rejectPromise) => {
-    const buildDir = resolve(process.cwd(), "build");
+async function compile() {
+  const buildDir = resolve(process.cwd(), "build");
+  if (existsSync(buildDir)) {
+    await rmdir(buildDir, { recursive: true });
+  }
+  exec("tsc");
 
-    if (existsSync(buildDir)) {
-      // clear out the build directory
-      rmSync(buildDir, { recursive: true, force: true });
-    }
-
-    exec("tsc"); // compile TypeScript
-
-    for await (const file of getAllFiles(resolve(process.cwd(), "src"))) {
-      let parent = dirname(file);
-      if (!(parent.endsWith("ts") || parent.endsWith("js"))) {
-        mkdir(resolve(process.cwd(), "build", basename(parent)), {
-          recursive: true,
-        }).finally(() => {
-          // I want the files copied regardless of if the directory exists or not. If there is a more severe
-          // error that rejects the copying, then that will reject this function with the same error
-          copyFile(
-            file,
-            resolve(process.cwd(), "build", basename(parent), basename(file))
-          ).catch((err) => {
-            rejectPromise(err);
-          });
-        });
+  for await (const file of getAllFiles(resolve(process.cwd(), "src"))) {
+    let parent = dirname(file);
+    if (!(parent.endsWith("ts") || parent.endsWith("js"))) {
+      try {
+        await mkdir(resolve(buildDir, basename(parent)), { recursive: true });
+        copyFile(file, resolve(buildDir, basename(parent), basename(file)));
+      } catch (e) {
+        console.error(e);
       }
     }
-    resolvePromise();
-  });
-};
+  }
+}
 
-compile()
-  .then(() => console.log("Electron TypeScript successfully compiled"))
-  .catch((err) => console.error(err));
+(async () => {
+  try {
+    await compile();
+    console.log("Electron TypeScript successfully compiled!");
+  } catch (error) {
+    console.error(e);
+  }
+})();
