@@ -1,5 +1,6 @@
 import * as path from "path";
-import * as fs from "fs";
+import * as fsAsync from "fs/promises";
+import { writeFileSync } from "fs";
 import { ipcRenderer } from "electron";
 
 interface ConfigData {
@@ -27,28 +28,26 @@ export class UserConfig {
   set savePath(path: string) {
     this._savePath = path;
     this._data["savePath"] = path;
-    fs.writeFileSync(this.path, JSON.stringify(this._data));
+    writeFileSync(this.path, JSON.stringify(this._data));
   }
 
   constructor(path: string) {
     this._path = path;
   }
 
-  public parseDataFile = () => {
-    return new Promise<ConfigData>((resolve, _) => {
-      try {
-        resolve(JSON.parse(fs.readFileSync(this.path).toString()));
-      } catch (e) {
-        ipcRenderer.invoke("getPath", "downloads").then((result) => {
-          let data: ConfigData = {
-            savePath: result,
-          };
-          fs.writeFileSync(this.path, JSON.stringify(data)); // creates and writes to the settings file
-          resolve(data);
-        });
-      }
-    });
-  };
+  public async parseDataFile(): Promise<ConfigData> {
+    try {
+      return JSON.parse(
+        (await fsAsync.readFile(this.path)).toString()
+      ) as ConfigData;
+    } catch (err) {
+      const data: ConfigData = {
+        savePath: await ipcRenderer.invoke("getPath", "downloads"),
+      };
+      await fsAsync.writeFile(this.path, JSON.stringify(data));
+      return data;
+    }
+  }
 }
 
 /**
