@@ -78,26 +78,25 @@ async function download(
 
 (() => {
   [downloadAudioBtn, downloadVideoBtn].forEach((button) => {
-    button.addEventListener("click", (event) => {
-      download(
-        (<HTMLElement>event.target).id.includes("video"),
-        (<HTMLInputElement>document.getElementById("url")).value.trim(),
-        (<HTMLInputElement>document.getElementById("file-name")).value.trim()
-      )
-        .then((file) => {
-          updateProgressBar(
-            `${basename(file.filePath)} saved successfully`,
-            "#00c210"
-          );
-          file.open();
-        })
-        .catch((err) => {
-          console.error(err);
-          let errorMessage: string = /ENOTFOUND/.test(err.message)
-            ? "Error: Invalid URL. Check your internet connection"
-            : "Error: " + err.message;
-          updateProgressBar(errorMessage, "#e01400");
-        });
+    button.addEventListener("click", async (event) => {
+      try {
+        const file = await download(
+          (<HTMLElement>event.target).id.includes("video"),
+          (<HTMLInputElement>document.getElementById("url")).value.trim(),
+          (<HTMLInputElement>document.getElementById("file-name")).value.trim()
+        );
+        updateProgressBar(
+          `${basename(file.filePath)} saved successfully`,
+          "#00c210"
+        );
+        file.open();
+      } catch (err) {
+        console.error(err);
+        let errorMessage: string = /ENOTFOUND/.test(err.message)
+          ? "Error: Invalid URL. Check your internet connection"
+          : "Error: " + err.message;
+        updateProgressBar(errorMessage, "#e01400");
+      }
     });
   });
 
