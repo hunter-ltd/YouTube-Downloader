@@ -4,7 +4,7 @@ import ytdl from "ytdl-core";
 import { join } from "path";
 import { File } from "./file";
 import { unlink } from "fs";
-import { updateProgressBar } from "./download";
+import { updateProgressBar } from "./render";
 
 ffmpeg.setFfmpegPath(ffmpegPath);
 
