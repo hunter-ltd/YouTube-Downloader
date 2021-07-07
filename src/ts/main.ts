@@ -1,8 +1,9 @@
-import {app, BrowserWindow, Menu, shell, ipcMain, dialog} from 'electron';
+import { app, BrowserWindow, Menu, shell, ipcMain, dialog } from "electron";
 import * as path from "path";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
-if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
+if (require("electron-squirrel-startup")) {
+  // eslint-disable-line global-require
   app.quit();
 }
 
@@ -14,23 +15,25 @@ const createWindow = () => {
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
-    }
+    },
   });
 
   const menu = Menu.buildFromTemplate([
     {
-      label: 'File',
+      label: "File",
       submenu: [
         {
-          label: 'GitHub Page',
+          label: "GitHub Page",
           click() {
-            shell.openExternal('https://github.com/hunter-ltd/YouTube-Downloader')
-          }
+            shell.openExternal(
+              "https://github.com/hunter-ltd/YouTube-Downloader"
+            );
+          },
         },
         { label: "About YTDL GUI", role: "about" },
         { type: "separator" },
         {
-          label: 'Save folder',
+          label: "Save folder",
           click() {
             let settingsWindow = new BrowserWindow({
               width: 500,
@@ -38,29 +41,32 @@ const createWindow = () => {
               frame: true,
               webPreferences: {
                 nodeIntegration: true,
-                contextIsolation: false
-              }
+                contextIsolation: false,
+              },
             });
             // settingsWindow.webContents.openDevTools();
-            settingsWindow.on('close', () => {
+            settingsWindow.on("close", () => {
               settingsWindow = null;
             });
-            settingsWindow.loadURL(path.join("file://", __dirname, 'html', 'settings.html'));
-            settingsWindow.show()
-          }
+            settingsWindow.setMenuBarVisibility(false);
+            settingsWindow.loadURL(
+              path.join("file://", __dirname, "html", "settings.html")
+            );
+            settingsWindow.show();
+          },
         },
-        {type: 'separator'},
+        { type: "separator" },
         {
-          label: 'Quit',
+          label: "Quit",
           accelerator: "CmdOrCtrl+Q",
           click() {
             app.quit();
-          }
+          },
         },
-      ]
+      ],
     },
     {
-      label: 'Edit',
+      label: "Edit",
       submenu: [
         { label: "Undo", accelerator: "CmdOrCtrl+Z", role: "undo" },
         { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", role: "redo" },
@@ -68,16 +74,15 @@ const createWindow = () => {
         { label: "Cut", accelerator: "CmdOrCtrl+X", role: "cut" },
         { label: "Copy", accelerator: "CmdOrCtrl+C", role: "copy" },
         { label: "Paste", accelerator: "CmdOrCtrl+V", role: "paste" },
-        { label: "Select All", accelerator: "CmdOrCtrl+A", role: "selectAll" }
-      ]
-    }
+        { label: "Select All", accelerator: "CmdOrCtrl+A", role: "selectAll" },
+      ],
+    },
   ]);
 
   Menu.setApplicationMenu(menu);
 
-
   // and load the index.html of the app.
-  mainWindow.loadFile(path.join(__dirname, "html", 'index.html'));
+  mainWindow.loadFile(path.join(__dirname, "html", "index.html"));
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools();
@@ -86,18 +91,18 @@ const createWindow = () => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+app.on("ready", createWindow);
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") {
     app.quit();
   }
 });
 
-app.on('activate', () => {
+app.on("activate", () => {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {
@@ -108,4 +113,6 @@ app.on('activate', () => {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
 ipcMain.handle("getPath", async (_, args) => app.getPath(args));
-ipcMain.handle("showOpenDialog", async () => dialog.showOpenDialog({properties: ['openDirectory']}));
+ipcMain.handle("showOpenDialog", async () =>
+  dialog.showOpenDialog({ properties: ["openDirectory"] })
+);
